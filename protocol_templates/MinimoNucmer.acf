@@ -1,0 +1,193 @@
+#--------------------------------------- USAGE --------------------------------#
+# Derived from Minimo and https://wiki.umiacs.umd.edu/cbcb/index.php/Assembly_merge#minimus1
+#?
+#? Minimo is a de novo assembler based on the AMOS infrastructure. Minimo uses a
+#? conservative overlap-layout-consensus algorithm to avoid mis-assemblies and
+#? can be applied to short read or strand-specific assemblies. The input is a
+#? FASTA file and there are options to control the stringency of the assembly
+#? and the processing of the quality scores. By default, the results are in the
+#? AMOS format and written to the directory where the input FASTA file is located.
+#?
+#? Usage:
+#?     Minimo FASTA_IN [options]
+#?
+#? Options:
+#?     -D QUAL_IN=<file>   Input quality score file (in Phred format)
+#?     -D GOOD_QUAL=<n>    Quality score to set for bases within the clear
+#?                           range if no quality file was given (default: 30)
+#?     -D BAD_QUAL=<n>     Quality score to set for bases outside clear range
+#?                           if no quality file was given (default: 10). If your
+#?                           sequences are trimmed, try the same value as GOOD_QUAL.
+#?     -D MIN_LEN=<n>      Minimum contig overlap length (at least 20 bp, 
+#?                           default: 35)
+#?     -D MIN_IDENT=<d>    Minimum contig overlap identity percentage (between 0
+#?                           and 100 %, default: 98)
+#?     -D MAXTRIM=<n>      Maximum sequence trimming length (Default 20bp)
+#?     -D STRAND_SPEC=<n>  Do a strand-specific assembly (e.g. for transcripts)
+#?                           (0:no 1:yes, default: 0)
+#?     -D ALN_WIGGLE=<d>   Alignment wiggle value (from 2 for short reads to 15 for
+#?                           long reads, default: 2)
+#?     -D FASTA_EXP=<n>    Export results in FASTA format (0:no 1:yes, default: 0)
+#?     -D ACE_EXP=<n>      Export results in ACE format (0:no 1:yes, default: 0)
+#?     -D OUT_PREFIX=<s>   Prefix to use for the output file path and name
+#?
+#? Minimo v1.8 Copyright Florent Angly 2010. Under the GPL v3 open-source license.
+#?
+
+BINDIR          = /usr/bin
+NUCMER          = $(PBX_MUMMER_PATH)/nucmer
+DELTAFILTER     = $(PBX_MUMMER_PATH)/delta-filter
+SHOWCOORDS      = $(PBX_MUMMER_PATH)/show-coords
+
+# --------------------------------------- ARGUMENTS AND DEFAULTS ---------------#
+
+# Expecting one mandatory argument, the FASTA filename
+EXPECT 1
+FASTA_IN   = $(PREFIX)
+
+# Defaults parameters
+QUAL_IN     = ""
+GOOD_QUAL   = 30
+BAD_QUAL    = 10
+MIN_LEN     = 35
+MIN_IDENT   = 98
+MAXTRIM     = 20
+STRAND_SPEC = 0
+ALN_WIGGLE  = 2
+FASTA_EXP   = 0
+ACE_EXP     = 0
+OUT_PREFIX  = ""
+BLAST_SUBJECT = ""
+
+# Verbosity level (from 0 to ??)
+VERBOSE    = 0
+
+# File directory and basename (strip FASTA filename of its extensions)
+FASTA_BASE = $(shell /bin/echo -n `dirname $(FASTA_IN\)`/`basename $(FASTA_IN\) | cut -d'.' -f1`)
+
+# Output prefix determined from user input if specified, from the fasta file otherwise
+BASE       = $(shell if [ "$(OUT_PREFIX\)" != "" ]; then /bin/echo -n $(OUT_PREFIX\); else /bin/echo -n $(FASTA_BASE\); fi)
+
+# Convert percentage of identity between overlaps from % to fractional
+MAX_OVL_ERROR  = $(shell /bin/echo -n `/bin/echo "scale=3; 1 - $(MIN_IDENT\) / 100" | bc`)
+
+# The error in the consensus sequence is twice the overlap error to allow
+# for independent errors from different sequences
+MAX_CONS_ERROR = $(shell /bin/echo -n `/bin/echo "scale=3; $(MAX_OVL_ERROR\) * 2" | bc`)
+
+#------------------------------------ FILENAMES ------------------------------#
+
+BLAST_CONTIGS_DIR = blast_contigs
+BLAST_SINGLETONS_DIR = blast_singletons
+BANKS_DIR = banks
+CONTIGS_DIR = contigs
+SINGLETONS_DIR = singletons
+
+BANK        = $(BASE).bnk
+SINGLE_LST  = $(BASE).lst
+FASTA_OUT   = $(BASE)-combo.fa
+QUAL_OUT    = $(BASE)-combo.qual
+CONTIGS_FASTA_OUT = $(BASE)-contigs.fasta
+CONTIGS_QUAL_OUT = $(BASE)-contigs.qual
+SINGLETONS_FASTA_OUT   = $(BASE)-singletons.fasta
+SINGLETONS_QUAL_OUT    = $(BASE)-singletons.qual
+AMOS_OUT    = $(BASE)-combo.afg
+ACE_OUT     = $(BASE)-combo.ace
+ALIGN       = $(BASE).delta
+COORDS      = $(BASE).coords
+OVLTAB      = $(BASE).ovl
+OVLAMOS     = $(BASE).OVL
+NUCMER_FASTA = $(BASE)-nucmer.fasta
+
+## Printing parameters
+10: /bin/echo "Running Minimo with:\nFASTA_IN='$(FASTA_IN)'\nQUAL_IN='$(QUAL_IN)'\nGOOD_QUAL='$(GOOD_QUAL)'\nBAD_QUAL='$(BAD_QUAL)'\nMIN_LEN='$(MIN_LEN)'\nMIN_IDENT='$(MIN_IDENT)'\nMAX_OVL_ERROR='$(MAX_OVL_ERROR)'\nMAX_CONS_ERROR='$(MAX_CONS_ERROR)'\nSTRAND_SPEC='$(STRAND_SPEC)'\nALN_WIGGLE='$(ALN_WIGGLE)'\nFASTA_EXP='$(FASTA_EXP)'\nBASE='$(BASE)'\nFASTA_OUT='$(FASTA_OUT)'\nQUAL_OUT='$(QUAL_OUT)'\nAMOS_OUT='$(AMOS_OUT)'\nACE_OUT='$(ACE_OUT)'\nVERBOSE='$(VERBOSE)'"
+
+# Required input files
+INPUTS      = $(FASTA_IN)
+
+# Temp files
+TEMPS       = $(SINGLE_LST)
+
+# Output files
+OUTPUTS     = $(FASTA_OUT) $(QUAL_OUT) $(AMOS_OUT) $(ACE_OUT)
+
+#----------------------------------- IMPORT SEQUENCES -------------------------#
+
+## Creating output directories
+20: if [ ! -d `dirname $(BASE)` ]; then mkdir `dirname $(BASE)`; fi
+21: if [ ! -d  $(BANKS_DIR) ]; then mkdir $(BANKS_DIR); fi
+22: if [ ! -d  $(CONTIGS_DIR) ]; then mkdir $(CONTIGS_DIR); fi
+23: if [ ! -d  $(SINGLETONS_DIR) ]; then mkdir $(SINGLETONS_DIR); fi
+24: if [ ! -d  $(BLAST_CONTIGS_DIR) ]; then mkdir $(BLAST_CONTIGS_DIR); fi
+25: if [ ! -d  $(BLAST_SINGLETONS_DIR) ]; then mkdir $(BLAST_SINGLETONS_DIR); fi
+
+## Warning about pre-existing AMOS bank
+30: if [ -d $(BANK) ]; then /bin/echo "Warning: overwriting existing AMOS bank $(BANK)"; fi;
+
+## Importing the FASTA and QUAL files to an AMOS bank
+40: if [ "$(QUAL_IN)" != "" ]; then $(BINDIR)/toAmos -s $(FASTA_IN) -q $(QUAL_IN) -gq $(GOOD_QUAL) -bq $(BAD_QUAL) -o - | $(BINDIR)/bank-transact -c -z -f -b $(BANK) -m -; else $(BINDIR)/toAmos -s $(FASTA_IN) -gq $(GOOD_QUAL) -bq $(BAD_QUAL) -o - | $(BINDIR)/bank-transact -c -z -f -b $(BANK) -m -; fi
+41: $(BINDIR)/dumpreads $(BANK) > $(NUCMER_FASTA)
+
+#----------------------------------- ASSEMBLE ---------------------------------#
+
+## Getting overlaps
+50: $(NUCMER) -maxmatch -c $(MIN_LEN) $(NUCMER_FASTA) $(NUCMER_FASTA) -p $(BASE)
+51: $(SHOWCOORDS) -H -c -l -o -r -I $(MIN_IDENT) $(ALIGN) | $(BINDIR)/nucmerAnnotate | egrep 'BEGIN|END|CONTAIN|IDENTITY' > $(COORDS) 
+52: $(BINDIR)/nucmer2ovl -ignore $(MAXTRIM) -tab $(COORDS) | $(BINDIR)/sort2 > $(OVLTAB)
+
+## Converting overlaps
+53: $(BINDIR)/ovl2OVL $(OVLTAB)  > $(OVLAMOS)
+
+## Loading overlaps to the bank
+54: rm -f $(BANK)/OVL.* 
+55: $(BINDIR)/bank-transact -z -b $(BANK) -m $(OVLAMOS)
+
+## Forming contigs
+60: $(BINDIR)/tigger -b $(BANK) -v $(VERBOSE)
+
+## Determining contig consensus sequences
+# Default fraction of errors allowed in alignments 0.06 (6 %).
+# Default minimum number of bases strings in multialignment must overlap is 5 bp.
+70: $(BINDIR)/make-consensus -b -B -o $(MIN_LEN) -e $(MAX_CONS_ERROR) -w $(ALN_WIGGLE) -v $(VERBOSE) $(BANK)
+
+#----------------------------------- EXPORT SEQUENCES AND CONTIGS -------------#
+
+## Exporting results to an AMOS file
+#...all objects are exported: universal UNV, contig link CTL, contig edge CTE, fragment FRG, k-mer KMR,  library LIB, matepair MTP, overlap OVL, scaffold SCF, sequence SEQ, contig CTG, read RED, distribution DST, tile TLE
+80: $(BINDIR)/bank-report -b $(BANK) > $(AMOS_OUT)
+
+## Exporting contigs to a FASTA and QUAL file
+#...using IIDs (EIDs are undefined for contigs) and contig details (num reads, coverage) on fasta header line
+90: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/bank2fasta -b $(BANK) -iid -q $(QUAL_OUT) -d > $(FASTA_OUT); fi
+91: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/bank2fasta -b $(BANK) -iid -q $(CONTIGS_DIR)/$(CONTIGS_QUAL_OUT) -d > $(CONTIGS_DIR)/$(CONTIGS_FASTA_OUT); fi
+
+## Exporting assembly as BAM
+92: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/bank2contig -e -s $(BANK) > $(CONTIGS_DIR)/$(BASE)-contigs.sam; fi
+93: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/samtools faidx $(CONTIGS_DIR)/$(CONTIGS_FASTA_OUT); fi
+94: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/samtools import $(CONTIGS_DIR)/$(CONTIGS_FASTA_OUT).fai $(CONTIGS_DIR)/$(BASE)-contigs.sam $(CONTIGS_DIR)/$(BASE)-contigs.bam; fi
+95: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/samtools sort $(CONTIGS_DIR)/$(BASE)-contigs.bam $(CONTIGS_DIR)/$(BASE)-contigs.sorted; fi
+96: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/samtools index $(CONTIGS_DIR)/$(BASE)-contigs.sorted.bam; fi
+
+## Listing singletons IDs
+97: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/listReadPlacedStatus -S -I $(BANK) > $(SINGLE_LST); fi
+## Exporting singletons to the FASTA file
+#...use sequence full range and use EIDs (not IIDs to avoid conflict with contigs IIDs)
+98: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/dumpreads -r -e -I $(SINGLE_LST) $(BANK) >> $(FASTA_OUT); fi
+99: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/dumpreads -r -e -I $(SINGLE_LST) $(BANK) >> $(SINGLETONS_DIR)/$(SINGLETONS_FASTA_OUT); fi
+## Exporting singletons to the QUAL file
+#...use qualities full range and use EIDs (not IIDs to avoid conflict with contigs IIDs)
+100: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/dumpreads -r -e -q -I $(SINGLE_LST) $(BANK) >> $(QUAL_OUT); fi
+101: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/dumpreads -r -e -q -I $(SINGLE_LST) $(BANK) >> $(SINGLETONS_DIR)/$(SINGLETONS_QUAL_OUT); fi
+
+## BLASTing against TALEs
+102: if [ "$(BLAST_SUBJECT)" != "" ]; then $(BINDIR)/blastn -query $(CONTIGS_DIR)/$(CONTIGS_FASTA_OUT) -subject $(BLAST_SUBJECT) -outfmt "6 qseqid sseqid length pident mismatch gapopen qstart qend sstart send" -perc_identity 96 > $(BLAST_CONTIGS_DIR)/$(BASE)-contigs.txt; fi
+103: if [ "$(BLAST_SUBJECT)" != "" ]; then $(BINDIR)/blastn -query $(SINGLETONS_DIR)/$(SINGLETONS_FASTA_OUT) -subject $(BLAST_SUBJECT) -outfmt "6 qseqid sseqid length pident mismatch gapopen qstart qend sstart send" -perc_identity 96 > $(BLAST_SINGLETONS_DIR)/$(BASE)-singletons.txt; fi
+
+## Export results to an ACE file
+104: if [ $(ACE_EXP) -eq 1 ]; then $(BINDIR)/amos2ace $(AMOS_OUT) -o $(ACE_OUT); fi
+
+#----------------------------------- CLEAN UP ---------------------------------#
+
+## Removing temporary files and folders
+110: rm -rf $(TEMPS)
+111: mv $(BANK) $(BANKS_DIR)/$(BANK)

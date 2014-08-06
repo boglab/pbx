@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<smrtpipeSettings>
+    <protocol version="1.3.0" id="RS_PreAssembler_TALs.1" editable="true">
+        <param name="name" label="Protocol Name">
+            <value>RS_PreAssembler_TALs</value>
+            <input type="text"/>
+            <rule required="true"/>
+        </param>
+        <param name="description">
+            <value>The pre-assembler protocol constructs a set of highly accurate long reads for use in de novo assembly using the hierarchical genome assembly process (HGAP). The algorithm takes each read exceeding a minimum length, aligns all reads against it, trims the edges, and then takes the consensus.</value>
+            <textarea></textarea>
+        </param>
+        <param name="version" hidden="true">
+            <value>1</value>
+            <input type="text"/>
+            <rule type="digits" required="true" min="1.0"/>
+        </param>
+        <param name="state">
+            <value>active</value>
+            <input value="active" type="radio"/>
+            <input value="inactive" type="radio"/>
+        </param>
+        <param name="control" hidden="true">
+            <value></value>
+        </param>
+        <param name="fetch" hidden="true">
+            <value>common/protocols/preprocessing/Fetch.1.xml</value>
+        </param>
+        <param name="filtering">
+            <value>common/protocols/filtering/PreAssemblerSFilter.1.xml</value>
+            <select multiple="true">
+                <import extension="xml" contentType="text/directory">common/protocols/filtering</import>
+            </select>
+        </param>
+        <param name="spikeinControl" hidden="true">
+            <value>common/protocols/control/SControl.1.xml</value>
+        </param>
+        <param name="assembly">
+            <value>common/protocols/assembly/PreAssembler.1.xml</value>
+            <select multiple="true">
+                <import extension="xml" contentType="text/directory">common/protocols/assembly</import>
+            </select>
+        </param>
+    </protocol>
+    <moduleStage name="fetch" editable="true">
+        <module label="Fetch v1" id="P_Fetch" editableInJob="true">
+            <description>Sets up inputs</description>
+        </module>
+    </moduleStage>
+    <moduleStage name="filtering" editable="true">
+        <module label="PreAssembler Filter v1" id="P_Filter" editableInJob="true">
+            <description>Filter reads for use in the pre-assembly step of HGAP, the hierarchical genome assembly process.</description>
+            <param name="minSubReadLength" label="Minimum Subread Length">
+                <title>The minimum subread length. Shorter subreads will be filtered and excluded from further analysis.</title>
+                <value>4000</value>
+                <input type="text" size="3"/>
+                <rule type="number" min="0.0" message="Value must be a positive integer"/>
+            </param>
+            <param name="readScore" label="Minimum Polymerase Read Quality">
+                <title>The minimum polymerase read quality determines the quality cutoff. Polymerase reads with lower quality will be filtered and excluded from further analysis.</title>
+                <value>0.80</value>
+                <input type="text" size="3"/>
+                <rule type="number" min="0.0" message="Value must be between 0 and 1" max="1.0"/>
+            </param>
+            <param name="minLength" label="Minimum Polymerase Read Length">
+                <title>The minimum polymerase read length. Shorter polymerase reads will be excluded from further analysis.</title>
+                <value>100</value>
+                <input type="text" size="3"/>
+                <rule type="number" min="0.0" message="Value must be a positive integer"/>
+            </param>
+            <param name="whiteList" label="Read Whitelist">
+                <value>__PBX_WHITELISTING_RESULTS__/talreads.txt</value>
+            </param>
+        </module>
+        <module label="PreAssemblerSFilter Reports v1" id="P_FilterReports" editableInJob="false"/>
+    </moduleStage>
+    <moduleStage name="assembly" editable="true">
+        <module label="PreAssembler v1" id="P_PreAssembler" editableInJob="true">
+            <title>Pre-assemble long reads as the first step of the Hierarchical Genome Assembly process (HGAp).</title>
+            <param name="useFastqAsShortReads" hidden="true">
+                <value>False</value>
+            </param>
+            <param name="useFastaAsLongReads" hidden="true">
+                <value>False</value>
+            </param>
+            <param name="useLongReadsInConsensus" hidden="true">
+                <value>False</value>
+            </param>
+            <param name="useUnalignedReadsInConsensus" hidden="true">
+                <value>False</value>
+            </param>
+            <param name="minLongReadLength" label="Minimum Seed Read Length">
+                <title>Minimum length of reads to use as seeds for pre-assembly</title>
+                <value>16000</value>
+                <input type="text"/>
+                <rule type="digits" min="1.0" message="Value must be an integer between 1 and 100000" max="100000.0"/>
+            </param>
+            <param name="blasrOpts" label="BLASR Options (Advanced)">
+                <title>The -bestn and -nCandidates options should be approximately equal to the expected seed read coverage</title>
+                <value>-minReadLength 4000 -maxScore -1000 -bestn 24 -maxLCPLength 14 -nCandidates 24</value>
+                <input type="text"/>
+            </param>
+            <param name="consensusOpts" hidden="true">
+                <value> -L </value>
+            </param>
+            <param name="layoutOpts" hidden="true">
+                <value> --overlapTolerance 100 --trimHit 50 </value>
+            </param>
+            <param name="consensusChunks" hidden="true">
+                <value>60</value>
+            </param>
+            <param name="trimFastq" label="Trim FASTQ Output">
+                <title>Trims the low-quality regions from the FASTQ sequence entries.</title>
+                <value>false</value>
+                <input type="checkbox"/>
+            </param>
+            <param name="trimOpts" hidden="true">
+                <value> --qvCut=59.5 --minSeqLen=500 </value>
+            </param>
+            <param name="useCCS" label="Use CCS">
+                <title>Assemble with CCS reads instead of subreads. In most cases assembling with subreads will be preferred.</title>
+                <value>False</value>
+                <input type="checkbox"/>
+            </param>
+        </module>
+    </moduleStage>
+    <fileName>RS_PreAssembler.1.xml</fileName>
+</smrtpipeSettings>

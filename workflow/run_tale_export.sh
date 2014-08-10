@@ -20,7 +20,6 @@ max_5p_length=$(python2 ${PBX_SCRIPTS_PATH}/get_extreme_sequence_length.py ${tal
 min_3p_length=$(python2 ${PBX_SCRIPTS_PATH}/get_extreme_sequence_length.py ${tale_termini_file} min end_full)
 max_3p_length=$(python2 ${PBX_SCRIPTS_PATH}/get_extreme_sequence_length.py ${tale_termini_file} max end_full)
 
-
 export_resequenced_tale_seqs() {
     fprefix=`echo $1 | cut -c 21-`
     blastn -task blastn -strand plus -query $1/data/consensus.fasta -subject ${tale_termini_file} -outfmt "6 qseqid sseqid length pident mismatch gapopen qstart qend sstart send" -perc_identity 85 | sort -k 1,1 -k 7n,7 | python2 ${PBX_SCRIPTS_PATH}/blast_to_tale_ranges.py plus stdin ${min_5p_length} ${max_5p_length} ${min_3p_length} ${max_3p_length} > tale_ranges/${fprefix}_tale_ranges_plus.txt
@@ -65,10 +64,6 @@ export_combined_tale_seqs_tables() {
     cat tale_seqs_tables/${fprefix2}.txt | column -t -s '	' > tale_seqs_tables/${fprefix2}_cols.txt
 }
 
-
-
-
-
 cd ${PBX_RESULTS_PATH_RESEQUENCING}
 
 # export tales from resequenced contigs
@@ -94,27 +89,27 @@ done
 
 cat tale_seqs/* | sort | uniq -c > unique_tale_seqs.txt
 
-#cd ${PBX_RESULTS_PATH_RESEQUENCED_CONTIG_ASSEMBLY}
+cd ${PBX_RESULTS_PATH_RESEQUENCED_CONTIG_ASSEMBLY}
 
-# export tales from combined resequenced contigs
+ export tales from combined resequenced contigs
 
-#echo "Exporting TALEs from assembled resequenced contigs"
-#
-#mkdir tale_ranges
-#mkdir tale_seqs
-#mkdir tale_seqs_tables
-#
-#for f in */*-combo.fa; do
-#    
-#    echo $f >> qc_log.txt 2>&1
-#    tblastx -query $f -subject $tale_typical_repeat_file -outfmt "6 qseqid sseqid qlen slen length pident mismatch gapopen qstart qend sstart send" -max_target_seqs 1000000 | sort -k 1,1 -k 9n,9 | python2 ${PBX_SCRIPTS_PATH}/check_for_boundary_tales.py $max_terminus_length >> qc_log.txt 2>&1
-#    
-#    echo $f >> export_log.txt 2>&1
-#    export_combined_tale_seqs $f >> export_log.txt 2>&1
-#    
-#    echo $f >> export_log_tables.txt 2>&1
-#    export_combined_tale_seqs_tables $f >> export_log_tables.txt 2>&1
-#    
-#done
-#
-#cat tale_seqs/* | sort | uniq -c > unique_tale_seqs.txt
+echo "Exporting TALEs from assembled resequenced contigs"
+
+mkdir tale_ranges
+mkdir tale_seqs
+mkdir tale_seqs_tables
+
+for f in */*-combo.fa; do
+    
+    echo $f >> qc_log.txt 2>&1
+    tblastx -query $f -subject $tale_typical_repeat_file -outfmt "6 qseqid sseqid qlen slen length pident mismatch gapopen qstart qend sstart send" -max_target_seqs 1000000 | sort -k 1,1 -k 9n,9 | python2 ${PBX_SCRIPTS_PATH}/check_for_boundary_tales.py $max_terminus_length >> qc_log.txt 2>&1
+    
+    echo $f >> export_log.txt 2>&1
+    export_combined_tale_seqs $f >> export_log.txt 2>&1
+    
+    echo $f >> export_log_tables.txt 2>&1
+    export_combined_tale_seqs_tables $f >> export_log_tables.txt 2>&1
+    
+done
+
+cat tale_seqs/* | sort | uniq -c > unique_tale_seqs.txt

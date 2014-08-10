@@ -14,7 +14,7 @@ with open(tale_like_alignment, "r") as alignment_file:
     
     for line in alignment_file:
         
-        if line.startswith('qname'):
+        if line.startswith('qName'):
             continue
         
         cols = line.split()

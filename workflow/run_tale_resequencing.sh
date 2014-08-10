@@ -18,10 +18,10 @@ cd ${RESULTS_PATH}
 RESULTS_REF_PATH=${RESULTS_PATH}/resequencing_refs
 REF_PATH_REPLACEMENT=$(echo "${RESULTS_REF_PATH}" | sed -e 's/[\/&]/\\&/g')
 
-RESULTS_FILTER_PATH=${RESULTS_PATH}/resequencing_output_filter
+RESULTS_FILTER_PATH=${RESULTS_PATH}/resequencing_filter
 # individual jobs will create links to the folder using this path
 # want it to be relative so they still make sense if the results are moved
-FILTER_PATH_REPLACEMENT=$(echo "../../resequencing_output_filter" | sed -e 's/[\/&]/\\&/g')
+FILTER_PATH_REPLACEMENT=$(echo "../../resequencing_filter" | sed -e 's/[\/&]/\\&/g')
 
 mkdir ${RESULTS_REF_PATH}
 
@@ -67,7 +67,7 @@ while [[ $n -lt ${#SETTINGS_NAMES[@]} ]]; do
         mkdir ${output_folder}
         
         # upload contigs as reference
-        referenceUploader -p ${RESULTS_REF_PATH} -c -n ref_Test_4kMinLength_50_4000_${settings_name}_contigs -f ${PBX_RESULTS_PATH_ASSEMBLY}/contigs/Test_4kMinLength_50_4000_${settings_name}-contigs.fasta
+        referenceUploader  --samIdx="samtools faidx" --saw="sawriter -blt 8 -welter" -p ${RESULTS_REF_PATH} -c -n ref_Test_4kMinLength_50_4000_${settings_name}_contigs -f ${PBX_RESULTS_PATH_ASSEMBLY}/contigs/Test_4kMinLength_50_4000_${settings_name}-contigs.fasta
         
         # generate smrtpipe input file
         fofnToSmrtpipeInput.py pbx_resequencing_input_files.fofn --jobname="Resequencing_Test_4kMinLength_50_4000_${settings_name}-contigs" > ${output_folder}/input.xml

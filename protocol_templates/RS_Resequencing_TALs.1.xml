@@ -7,8 +7,7 @@
             <rule required="true"/>
         </param>
         <param name="description">
-            <value>Map length and quality-filtered reads against a reference sequence; identify consensus and variant sequences using Quiver algorithm.
-      </value>
+            <value>Map length and quality-filtered reads against a reference sequence; identify consensus and variant sequences using Quiver algorithm.</value>
             <textarea></textarea>
         </param>
         <param name="version" hidden="true">
@@ -27,6 +26,7 @@
         <param name="control" hidden="true">
             <value></value>
         </param>
+        <param name="dummy" hidden="true"></param>
         <param name="fetch" hidden="true">
             <value>common/protocols/preprocessing/Fetch.1.xml</value>
         </param>
@@ -52,6 +52,9 @@
             </select>
         </param>
     </protocol>
+    <moduleStage name="dummy">
+        <module label="Dummy" id="P_DummyFilter"></module>
+    </moduleStage>
     <moduleStage name="fetch" editable="true">
         <module label="Fetch v1" id="P_Fetch" editableInJob="true">
             <description>Sets up inputs</description>
@@ -60,26 +63,8 @@
     <moduleStage name="filtering" editable="true">
         <module label="SFilter v1" id="P_Filter" editableInJob="true">
             <description>This module filters reads based on a minimum subread length, polymerase read quality and polymerase read length.</description>
-            <param name="minSubReadLength" label="Minimum Subread Length">
-                <value>4000</value>
-                <title>Subreads shorter than this value (in base pairs) are filtered out and excluded from analysis.</title>
-                <input type="text" size="3"/>
-                <rule type="number" min="0.0" message="Value must be a positive integer"/>
-            </param>
-            <param name="readScore" label="Minimum Polymerase Read Quality">
-                <value>75</value>
-                <title>Polymerase reads with lower quality than this value are filtered out and excluded from analysis.</title>
-                <input type="text"/>
-                <rule type="number" min="0.0" message="Value must be between 0 and 100" max="100.0"/>
-            </param>
-            <param name="minLength" label="Minimum Polymerase Read Length">
-                <value>50</value>
-                <title>Polymerase reads shorter than this value (in base pairs) are filtered out and excluded from analysis.</title>
-                <input type="text" size="3"/>
-                <rule type="number" min="0.0" message="Value must be a positive integer"/>
-            </param>
-            <param name="whiteList" label="Read Whitelist">
-                <value>__PBX_WHITELISTING_RESULTS__/talreads.txt</value>
+            <param name="linkOrigin" label="Link Origin">
+                <value>__PBX_RESEQUENCING_FILTER_RESULTS__</value>
             </param>
         </module>
         <module label="SFilter Reports v1" id="P_FilterReports" editableInJob="false"/>
@@ -95,16 +80,16 @@
     <moduleStage name="mapping" editable="true">
         <module label="BLASR v1" id="P_Mapping" editableInJob="true">
             <description>
-BLASR maps reads to genomes by finding the highest scoring local alignment or set of local alignments between the read and the genome. The first set of alignments is found by querying an index of the reference genome, and then refining until only high scoring alignments are retained.  Additional pulse metrics are loaded into the resulting cmp.h5 file to enable downstream use of the Quiver algorithm.
-    </description>
+                BLASR maps reads to genomes by finding the highest scoring local alignment or set of local alignments between the read and the genome. The first set of alignments is found by querying an index of the reference genome, and then refining until only high scoring alignments are retained.  Additional pulse metrics are loaded into the resulting cmp.h5 file to enable downstream use of the Quiver algorithm.
+            </description>
             <param name="maxHits" label="Maximum number of hits per read" hidden="true">
                 <value>10</value>
                 <title>
-        The maximum number of matches of each read to the reference
-        sequence that will be evaluated. maxHits should be greater
-        than the expected number of repeats if you want to spread hits
-        out on the genome.
-      </title>
+                    The maximum number of matches of each read to the reference
+                    sequence that will be evaluated. maxHits should be greater
+                    than the expected number of repeats if you want to spread hits
+                    out on the genome.
+                </title>
                 <input type="text"/>
                 <rule type="digits" message="Value must be an integer between 0 and 1000"/>
             </param>
@@ -143,9 +128,11 @@ BLASR maps reads to genomes by finding the highest scoring local alignment or se
             </param>
             <param name="loadPulsesOpts" hidden="true">
                 <value>bymetric</value>
-                <title>The default option of loadPulses is 'byread'. Option 'bymetric' 
-               is desined to sacrifice memory for increased speed, especially 
-               for jobs of which the number of reference contigs is large. </title>
+                <title>
+                    The default option of loadPulses is 'byread'. Option 'bymetric' 
+                    is desined to sacrifice memory for increased speed, especially 
+                    for jobs of which the number of reference contigs is large.
+                </title>
             </param>
         </module>
         <module label="BLASR Reports v1" id="P_MappingReports" editableInJob="false"/>

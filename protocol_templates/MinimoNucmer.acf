@@ -161,12 +161,14 @@ OUTPUTS     = $(FASTA_OUT) $(QUAL_OUT) $(AMOS_OUT) $(ACE_OUT)
 90: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/bank2fasta -b $(BANK) -iid -q $(QUAL_OUT) -d > $(FASTA_OUT); fi
 91: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/bank2fasta -b $(BANK) -iid -q $(CONTIGS_DIR)/$(CONTIGS_QUAL_OUT) -d > $(CONTIGS_DIR)/$(CONTIGS_FASTA_OUT); fi
 
+RESULT_CONTIGS_COUNT = $(shell if [ $(FASTA_EXP\) -eq 1 ]; then /bin/echo -n `grep -c '^>' $(CONTIGS_DIR\)/$(CONTIGS_FASTA_OUT\)`; else /bin/echo -n "0"; fi)
+
 ## Exporting assembly as BAM
-92: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/bank2contig -e -s $(BANK) > $(CONTIGS_DIR)/$(BASE)-contigs.sam; fi
-93: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/samtools faidx $(CONTIGS_DIR)/$(CONTIGS_FASTA_OUT); fi
-94: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/samtools import $(CONTIGS_DIR)/$(CONTIGS_FASTA_OUT).fai $(CONTIGS_DIR)/$(BASE)-contigs.sam $(CONTIGS_DIR)/$(BASE)-contigs.bam; fi
-95: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/samtools sort $(CONTIGS_DIR)/$(BASE)-contigs.bam $(CONTIGS_DIR)/$(BASE)-contigs.sorted; fi
-96: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/samtools index $(CONTIGS_DIR)/$(BASE)-contigs.sorted.bam; fi
+92: if [ $(FASTA_EXP) -eq 1 ] && [ $(RESULT_CONTIGS_COUNT) -gt 0 ]; then $(BINDIR)/bank2contig -e -s $(BANK) > $(CONTIGS_DIR)/$(BASE)-contigs.sam; fi
+93: if [ $(FASTA_EXP) -eq 1 ] && [ $(RESULT_CONTIGS_COUNT) -gt 0 ]; then $(BINDIR)/samtools faidx $(CONTIGS_DIR)/$(CONTIGS_FASTA_OUT); fi
+94: if [ $(FASTA_EXP) -eq 1 ] && [ $(RESULT_CONTIGS_COUNT) -gt 0 ]; then $(BINDIR)/samtools import $(CONTIGS_DIR)/$(CONTIGS_FASTA_OUT).fai $(CONTIGS_DIR)/$(BASE)-contigs.sam $(CONTIGS_DIR)/$(BASE)-contigs.bam; fi
+95: if [ $(FASTA_EXP) -eq 1 ] && [ $(RESULT_CONTIGS_COUNT) -gt 0 ]; then $(BINDIR)/samtools sort $(CONTIGS_DIR)/$(BASE)-contigs.bam $(CONTIGS_DIR)/$(BASE)-contigs.sorted; fi
+96: if [ $(FASTA_EXP) -eq 1 ] && [ $(RESULT_CONTIGS_COUNT) -gt 0 ]; then $(BINDIR)/samtools index $(CONTIGS_DIR)/$(BASE)-contigs.sorted.bam; fi
 
 ## Listing singletons IDs
 97: if [ $(FASTA_EXP) -eq 1 ]; then $(BINDIR)/listReadPlacedStatus -S -I $(BANK) > $(SINGLE_LST); fi

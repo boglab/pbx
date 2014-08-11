@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Requires
+# PBX_MUMMER_PATH
 # PBX_SCRIPTS_PATH
 # PBX_WORKFLOW_PATH
 # PBX_RESULTS_PATH_RESEQUENCING
@@ -64,6 +65,28 @@ export_combined_tale_seqs_tables() {
     cat tale_seqs_tables/${fprefix2}.txt | column -t -s '	' > tale_seqs_tables/${fprefix2}_cols.txt
 }
 
+make_mummer_plots() {
+    fprefix=`echo $1 | cut -c 21-`;
+    
+    mkdir -p contig_dotplots/${fprefix}/sequences
+    python2 ${PBX_SCRIPTS_PATH}/split_reads.py $1/data/consensus.fasta contig_dotplots/${fprefix}/sequences
+    
+    cd contig_dotplots/${fprefix}
+    
+    for f in sequences/*.fasta; do
+        fileprefix=`echo "${f}" | cut -c 11- | rev | cut -c 7- | rev`;
+        ${PBX_MUMMER_PATH}/nucmer --maxmatch --nosimplify -p ${fileprefix} ${f} ${f};
+        ${PBX_MUMMER_PATH}/mummerplot -t postscript -p ${fileprefix} ${fileprefix}.delta;
+    done
+    
+    ls *.ps | sort -t . -k 1n,1 | xargs gs -sDEVICE=pdfwrite -dBATCH -dPDFSettings=/Screen -o ../${fprefix}.pdf
+    
+    cd ../
+    rm -rf ${fprefix}
+    cd ../
+}
+
+
 cd ${PBX_RESULTS_PATH_RESEQUENCING}
 
 # export tales from resequenced contigs
@@ -73,9 +96,10 @@ echo "Exporting TALEs from resequenced contigs"
 mkdir tale_ranges
 mkdir tale_seqs
 mkdir tale_seqs_tables
+mkdir contig_dotplots
 
 for f in resequencing_output_*; do
-    
+
     echo $f >> qc_log.txt 2>&1
     tblastx -query $f/data/consensus.fasta -subject $tale_typical_repeat_file -outfmt "6 qseqid sseqid qlen slen length pident mismatch gapopen qstart qend sstart send" -max_target_seqs 1000000 | sort -k 1,1 -k 9n,9 | python2 ${PBX_SCRIPTS_PATH}/check_for_boundary_tales.py $max_terminus_length >> qc_log.txt 2>&1
     
@@ -84,6 +108,10 @@ for f in resequencing_output_*; do
     
     echo $f >> export_log_tables.txt 2>&1
     export_resequenced_tale_seqs_tables $f >> export_log_tables.txt 2>&1
+    
+    if command -v gnuplot >/dev/null 2>&1; then
+        make_mummer_plots $f > /dev/null 2>&1
+    fi
     
 done
 

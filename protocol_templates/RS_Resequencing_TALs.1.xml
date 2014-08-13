@@ -21,7 +21,7 @@
             <input value="inactive" type="radio"/>
         </param>
         <param name="reference" hidden="true">
-            <value>__PBX_RESEQUENCING_REFERENCES__/ref_Test_4kMinLength_50_4000___PBX_RESEQUENCING_SETTINGS___contigs</value>
+            <value>__PBX_RESEQUENCING_REFERENCES__/ref_tale_assembly___PBX_RESEQUENCING_SETTINGS___contigs</value>
         </param>
         <param name="control" hidden="true">
             <value></value>

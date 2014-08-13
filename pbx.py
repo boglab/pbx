@@ -41,10 +41,20 @@ def get_options(base_path):
         "PBX_PROTOCOL_TEMPLATES_PATH": os.path.join(base_path, "protocol_templates"),
         "PBX_WORKFLOW_PATH": os.path.join(base_path, "workflow"),
         # User config
+        # General
         "PBX_SMRTANALYSIS_PATH": config.get('General', 'smrtanalysis_path'),
         "PBX_MUMMER_PATH": config.get('General', 'mummer_path'),
         "PBX_RAW_READS_PATH": config.get('General', 'raw_reads_path'),
+        # Whitelisting
         "PBX_TALE_SEQS_WHITELISTING": os.path.join(base_path, "tale_seqs", "whitelisting", config.get('Whitelisting', 'tale_seqs_file_whitelisting')),
+        # Preassembly
+        "PBX_PREASSEMBLY_MIN_SEED_READ_LENGTH": config.get('Preassembly', 'min_seed_read_length'),
+        "PBX_PREASSEMBLY_MIN_SUBREAD_LENGTH": config.get('Preassembly', 'min_subread_length'),
+        "PBX_PREASSEMBLY_MIN_TRIMMED_PREASSEMBLED_READ_QV": config.get('Preassembly', 'min_trimmed_preassembled_read_qv'),
+        "PBX_PREASSEMBLY_MIN_TRIMMED_PREASSEMBLED_READ_LENGTH": config.get('Preassembly', 'min_trimmed_preassembled_read_length'),
+        # Resequencing
+        "PBX_RESEQUENCING_MIN_SUBREAD_LENGTH": config.get('Resequencing', 'min_subread_length'),
+        # Export
         "PBX_TALE_SEQS_EXPORT": os.path.join(base_path, "tale_seqs", "exporter", config.get('Export', 'tale_seqs_file_export')),
         "PBX_TALE_SEQS_EXPORT_BOUNDARIES": os.path.join(base_path, "tale_seqs", "exporter", config.get('Export', 'tale_seqs_file_export_boundaries')),
     }
@@ -56,11 +66,11 @@ def get_options(base_path):
 
     # Other auto set options
     
-    options["env"]["PBX_RESULTS_PATH_WHITELISTING"] = os.path.join(options["env"]["PBX_RESULTS_PATH"], "blasr_raw_to_bls_tals_alignments")
-    options["env"]["PBX_RESULTS_PATH_PREASSEMBLY"] = os.path.join(options["env"]["PBX_RESULTS_PATH"], "preassembly_job")
-    options["env"]["PBX_RESULTS_PATH_ASSEMBLY"] = os.path.join(options["env"]["PBX_RESULTS_PATH"], "minimo_results")
-    options["env"]["PBX_RESULTS_PATH_RESEQUENCING"] = os.path.join(options["env"]["PBX_RESULTS_PATH"], "resequencing")
-    options["env"]["PBX_RESULTS_PATH_RESEQUENCED_CONTIG_ASSEMBLY"] = os.path.join(options["env"]["PBX_RESULTS_PATH"], "combine_resequenced_tals")
+    options["env"]["PBX_WHITELISTING_RESULTS_PATH"] = os.path.join(options["env"]["PBX_RESULTS_PATH"], "blasr_raw_to_bls_tals_alignments")
+    options["env"]["PBX_PREASSEMBLY_RESULTS_PATH"] = os.path.join(options["env"]["PBX_RESULTS_PATH"], "preassembly_job")
+    options["env"]["PBX_ASSEMBLY_RESULTS_PATH"] = os.path.join(options["env"]["PBX_RESULTS_PATH"], "minimo_results")
+    options["env"]["PBX_RESEQUENCING_RESULTS_PATH"] = os.path.join(options["env"]["PBX_RESULTS_PATH"], "resequencing")
+    options["env"]["PBX_RESEQUENCED_CONTIG_ASSEMBLY_RESULTS_PATH"] = os.path.join(options["env"]["PBX_RESULTS_PATH"], "combine_resequenced_tals")
     
     return options
 

@@ -39,7 +39,7 @@
         <module label="SFilter v1" id="P_Filter" editableInJob="true">
             <description>This module filters reads based on a minimum subread length, polymerase read quality and polymerase read length.</description>
             <param name="minSubReadLength" label="Minimum Subread Length">
-                <value>4000</value>
+                <value>__PBX_RESEQUENCING_MIN_SUBREAD_LENGTH__</value>
                 <title>Subreads shorter than this value (in base pairs) are filtered out and excluded from analysis.</title>
                 <input type="text" size="3"/>
                 <rule type="number" min="0.0" message="Value must be a positive integer"/>

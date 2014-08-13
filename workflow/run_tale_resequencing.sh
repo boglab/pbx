@@ -4,14 +4,15 @@
 # PBX_SMRTANALYSIS_PATH
 # PBX_RAW_READS_PATH
 # PBX_PROTOCOL_TEMPLATES_PATH
-# PBX_RESULTS_PATH_WHITELISTING
-# PBX_RESULTS_PATH_ASSEMBLY
-# PBX_RESULTS_PATH_RESEQUENCING
+# PBX_WHITELISTING_RESULTS_PATH
+# PBX_ASSEMBLY_RESULTS_PATH
+# PBX_RESEQUENCING_RESULTS_PATH
+# PBX_RESEQUENCING_MIN_SUBREAD_LENGTH
 
 source ${PBX_SMRTANALYSIS_PATH}/current/etc/setup.sh
 export PYTHONPATH="${PBX_WORKFLOW_PATH}/smrtanalysis_modules:$PYTHONPATH"
 
-RESULTS_PATH=${PBX_RESULTS_PATH_RESEQUENCING}
+RESULTS_PATH=${PBX_RESEQUENCING_RESULTS_PATH}
 mkdir -p ${RESULTS_PATH}
 cd ${RESULTS_PATH}
 
@@ -25,7 +26,7 @@ FILTER_PATH_REPLACEMENT=$(echo "../../resequencing_filter" | sed -e 's/[\/&]/\\&
 
 mkdir ${RESULTS_REF_PATH}
 
-WHITELIST_REPLACEMENT=$(echo "${PBX_RESULTS_PATH_WHITELISTING}" | sed -e 's/[\/&]/\\&/g')
+WHITELIST_REPLACEMENT=$(echo "${PBX_WHITELISTING_RESULTS_PATH}" | sed -e 's/[\/&]/\\&/g')
 
 find ${PBX_RAW_READS_PATH} -name "*.bax.h5" | sort > ${RESULTS_PATH}/pbx_resequencing_input_files.fofn
 
@@ -34,6 +35,7 @@ mkdir ${RESULTS_FILTER_PATH}
 fofnToSmrtpipeInput.py pbx_resequencing_input_files.fofn --jobname="Resequencing_Filter" > ${RESULTS_FILTER_PATH}/input.xml
 cp ${PBX_PROTOCOL_TEMPLATES_PATH}/RS_Resequencing_TALs_Filter.1.xml ${RESULTS_FILTER_PATH}/settings.xml
 sed -i "s/__PBX_WHITELISTING_RESULTS__/${WHITELIST_REPLACEMENT}/g" ${RESULTS_FILTER_PATH}/settings.xml
+sed -i "s/__PBX_RESEQUENCING_MIN_SUBREAD_LENGTH__/${PBX_RESEQUENCING_MIN_SUBREAD_LENGTH}/g" ${RESULTS_FILTER_PATH}/settings.xml
 smrtpipe.py --params=${RESULTS_FILTER_PATH}/settings.xml --output=${RESULTS_FILTER_PATH} xml:${RESULTS_FILTER_PATH}/input.xml
 
 SETTINGS_NAMES=(
@@ -59,7 +61,7 @@ n=0
 while [[ $n -lt ${#SETTINGS_NAMES[@]} ]]; do
     
     settings_name=${SETTINGS_NAMES[$n]}
-    minimo_results_file="${PBX_RESULTS_PATH_ASSEMBLY}/contigs/Test_4kMinLength_50_4000_${settings_name}-contigs.fasta"
+    minimo_results_file="${PBX_ASSEMBLY_RESULTS_PATH}/contigs/tale_assembly_${settings_name}-contigs.fasta"
     
     if [ -f $minimo_results_file ] && [ "`grep -c '^>' ${minimo_results_file}`" -ge 1 ]; then
         
@@ -67,10 +69,10 @@ while [[ $n -lt ${#SETTINGS_NAMES[@]} ]]; do
         mkdir ${output_folder}
         
         # upload contigs as reference
-        referenceUploader  --samIdx="samtools faidx" --saw="sawriter -blt 8 -welter" -p ${RESULTS_REF_PATH} -c -n ref_Test_4kMinLength_50_4000_${settings_name}_contigs -f ${PBX_RESULTS_PATH_ASSEMBLY}/contigs/Test_4kMinLength_50_4000_${settings_name}-contigs.fasta
+        referenceUploader  --samIdx="samtools faidx" --saw="sawriter -blt 8 -welter" -p ${RESULTS_REF_PATH} -c -n ref_tale_assembly_${settings_name}_contigs -f ${PBX_ASSEMBLY_RESULTS_PATH}/contigs/tale_assembly_${settings_name}-contigs.fasta
         
         # generate smrtpipe input file
-        fofnToSmrtpipeInput.py pbx_resequencing_input_files.fofn --jobname="Resequencing_Test_4kMinLength_50_4000_${settings_name}-contigs" > ${output_folder}/input.xml
+        fofnToSmrtpipeInput.py pbx_resequencing_input_files.fofn --jobname="Resequencing_tale_assembly_${settings_name}-contigs" > ${output_folder}/input.xml
         
         cp ${PBX_PROTOCOL_TEMPLATES_PATH}/RS_Resequencing_TALs.1.xml ${output_folder}/settings.xml
         sed -i "s/__PBX_RESEQUENCING_SETTINGS__/${settings_name}/g" ${output_folder}/settings.xml

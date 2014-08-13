@@ -52,7 +52,7 @@
             <description>Filter reads for use in the pre-assembly step of HGAP, the hierarchical genome assembly process.</description>
             <param name="minSubReadLength" label="Minimum Subread Length">
                 <title>The minimum subread length. Shorter subreads will be filtered and excluded from further analysis.</title>
-                <value>4000</value>
+                <value>__PBX_PREASSEMBLY_MIN_SUBREAD_LENGTH__</value>
                 <input type="text" size="3"/>
                 <rule type="number" min="0.0" message="Value must be a positive integer"/>
             </param>
@@ -91,13 +91,13 @@
             </param>
             <param name="minLongReadLength" label="Minimum Seed Read Length">
                 <title>Minimum length of reads to use as seeds for pre-assembly</title>
-                <value>16000</value>
+                <value>__PBX_PREASSEMBLY_MIN_SEED_READ_LENGTH__</value>
                 <input type="text"/>
                 <rule type="digits" min="1.0" message="Value must be an integer between 1 and 100000" max="100000.0"/>
             </param>
             <param name="blasrOpts" label="BLASR Options (Advanced)">
                 <title>The -bestn and -nCandidates options should be approximately equal to the expected seed read coverage</title>
-                <value>-minReadLength 4000 -maxScore -1000 -bestn 24 -maxLCPLength 14 -nCandidates 24</value>
+                <value>-minReadLength __PBX_PREASSEMBLY_MIN_SUBREAD_LENGTH__ -maxScore -1000 -bestn 24 -maxLCPLength 14 -nCandidates 24</value>
                 <input type="text"/>
             </param>
             <param name="consensusOpts" hidden="true">

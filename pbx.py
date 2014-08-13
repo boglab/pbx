@@ -44,9 +44,9 @@ def get_options(base_path):
         "PBX_SMRTANALYSIS_PATH": config.get('General', 'smrtanalysis_path'),
         "PBX_MUMMER_PATH": config.get('General', 'mummer_path'),
         "PBX_RAW_READS_PATH": config.get('General', 'raw_reads_path'),
-        "PBX_TALE_SEQS_WHITELISTING": os.path.join(base_path, "tale_seqs", "whitelisting", config.get('General', 'tale_seqs_file_whitelisting')),
-        "PBX_TALE_SEQS_EXPORT": os.path.join(base_path, "tale_seqs", "exporter", config.get('General', 'tale_seqs_file_export')),
-        "PBX_TALE_SEQS_EXPORT_BOUNDARIES": os.path.join(base_path, "tale_seqs", "exporter", config.get('General', 'tale_seqs_file_export_boundaries')),
+        "PBX_TALE_SEQS_WHITELISTING": os.path.join(base_path, "tale_seqs", "whitelisting", config.get('Whitelisting', 'tale_seqs_file_whitelisting')),
+        "PBX_TALE_SEQS_EXPORT": os.path.join(base_path, "tale_seqs", "exporter", config.get('Export', 'tale_seqs_file_export')),
+        "PBX_TALE_SEQS_EXPORT_BOUNDARIES": os.path.join(base_path, "tale_seqs", "exporter", config.get('Export', 'tale_seqs_file_export_boundaries')),
     }
     
     if config.has_option('General', 'results_path'):

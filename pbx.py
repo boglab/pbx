@@ -13,8 +13,31 @@ def run_command(options, command):
 def validate_options(options):
     pass
 
-def print_utils_and_citations():
-    pass
+def get_utils_and_citations():
+    return """
+    The PBX toolkit is built on free software. Please cite the following papers for this run:
+    
+    AMOS:
+    Treangen TJ, Sommer DD, Angly FE, Koren S, Pop M: Next Generation Sequence Assembly with AMOS. In Current Protocols in Bioinformatics. John Wiley & Sons, Inc.; 2011
+    
+    BLASR:
+    Chaisson MJ, Tesler G: Mapping single molecule sequencing reads using basic local alignment with successive refinement (BLASR): application and theory. Bmc Bioinformatics 2012, 13.
+    
+    BLAST+:
+    Camacho C, Coulouris G, Avagyan V, Ma N, Papadopoulos J, Bealer K, Madden T: BLAST+: architecture and applications. BMC Bioinformatics 2009, 10:421.
+    
+    Celera Assembler:
+    Myers EW, Sutton GG, Delcher AL, Dew IM, Fasulo DP, Flanigan MJ, Kravitz SA, Mobarry CM, Reinert KHJ, Remington KA, et al: A whole-genome assembly of Drosophila. Science 2000, 287:2196-2204.
+    
+    HGAP:
+    Chin CS, Alexander DH, Marks P, Klammer AA, Drake J, Heiner C, Clum A, Copeland A, Huddleston J, Eichler EE, et al: Nonhybrid, finished microbial genome assemblies from long-read SMRT sequencing data. Nature Methods 2013, 10:563-+.
+    
+    Minimus:
+    Sommer DD, Delcher AL, Salzberg SL, Pop M. Minimus: a fast, lightweight genome assembler. BMC Bioinformatics. 2007 Feb 26;8:64.
+    
+    MUMmer:
+    Kurtz S, Phillippy A, Delcher AL, Smoot M, Shumway M, Antonescu C, Salzberg SL: Versatile and open software for comparing large genomes. Genome Biology 2004, 5.
+    """
 
 def get_options(base_path):
     
@@ -82,6 +105,8 @@ if __name__ == "__main__":
     options = get_options(base_path)
     
     os.environ.update(options["env"])
+    
+    print(get_utils_and_citations())
     
     print("Identifying TALE region reads...")
     

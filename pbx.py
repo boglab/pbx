@@ -4,6 +4,7 @@ import os
 import os.path
 import ConfigParser
 import shlex
+import sys
 
 def run_command(options, command):
     #subprocess.check_call(["bash", "-x", "-e"] + shlex.split(command))
@@ -18,7 +19,7 @@ def print_utils_and_citations():
 def get_options(base_path):
     
     config = ConfigParser.RawConfigParser()
-    config.read(os.path.join(base_path, "config.ini"))
+    config.read(sys.argv[1])
     
     options = {}
     

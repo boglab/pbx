@@ -121,7 +121,7 @@
                 <input type="checkbox"/>
             </param>
             <param name="pbalign_opts" hidden="true">
-                <value>--seed=1 --minAccuracy=0.75 --minLength=50 --concordant --algorithmOptions="-useQuality"</value>
+                <value>--seed=1 --minAccuracy=0.75 --minLength=50 --concordant --algorithmOptions="-useQuality -minReadLength __PBX_RESEQUENCING_MIN_SUBREAD_LENGTH__ -minSubreadLength __PBX_RESEQUENCING_MIN_SUBREAD_LENGTH__"</value>
             </param>
             <param name="pulseMetrics" hidden="true">
                 <value>DeletionQV,IPD,InsertionQV,PulseWidth,QualityValue,MergeQV,SubstitutionQV,DeletionTag</value>

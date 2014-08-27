@@ -64,7 +64,7 @@
             </param>
             <param name="minLength" label="Minimum Polymerase Read Length">
                 <title>The minimum polymerase read length. Shorter polymerase reads will be excluded from further analysis.</title>
-                <value>100</value>
+                <value>__PBX_PREASSEMBLY_MIN_SUBREAD_LENGTH__</value>
                 <input type="text" size="3"/>
                 <rule type="number" min="0.0" message="Value must be a positive integer"/>
             </param>
@@ -97,7 +97,7 @@
             </param>
             <param name="blasrOpts" label="BLASR Options (Advanced)">
                 <title>The -bestn and -nCandidates options should be approximately equal to the expected seed read coverage</title>
-                <value>-minReadLength __PBX_PREASSEMBLY_MIN_SUBREAD_LENGTH__ -maxScore -1000 -bestn 24 -maxLCPLength 14 -nCandidates 24</value>
+                <value>-minReadLength __PBX_PREASSEMBLY_MIN_SUBREAD_LENGTH__ -minSubreadLength __PBX_PREASSEMBLY_MIN_SUBREAD_LENGTH__ -maxScore -1000 -bestn 24 -maxLCPLength 14 -nCandidates 24</value>
                 <input type="text"/>
             </param>
             <param name="consensusOpts" hidden="true">

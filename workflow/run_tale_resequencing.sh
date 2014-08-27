@@ -76,6 +76,7 @@ while [[ $n -lt ${#SETTINGS_NAMES[@]} ]]; do
         
         cp ${PBX_PROTOCOL_TEMPLATES_PATH}/RS_Resequencing_TALs.1.xml ${output_folder}/settings.xml
         sed -i "s/__PBX_RESEQUENCING_SETTINGS__/${settings_name}/g" ${output_folder}/settings.xml
+        sed -i "s/__PBX_RESEQUENCING_MIN_SUBREAD_LENGTH__/${PBX_RESEQUENCING_MIN_SUBREAD_LENGTH}/g" ${output_folder}/settings.xml
         sed -i "s/__PBX_RESEQUENCING_FILTER_RESULTS__/${FILTER_PATH_REPLACEMENT}/g" ${output_folder}/settings.xml
         sed -i "s/__PBX_RESEQUENCING_REFERENCES__/${REF_PATH_REPLACEMENT}/g" ${output_folder}/settings.xml
         

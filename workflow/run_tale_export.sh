@@ -119,7 +119,7 @@ cat tale_seqs/* | sort | uniq -c > unique_tale_seqs.txt
 
 cd ${PBX_RESEQUENCED_CONTIG_ASSEMBLY_RESULTS_PATH}
 
- export tales from combined resequenced contigs
+# export tales from combined resequenced contigs
 
 echo "Exporting TALEs from assembled resequenced contigs"
 

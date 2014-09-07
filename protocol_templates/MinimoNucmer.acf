@@ -132,7 +132,7 @@ OUTPUTS     = $(FASTA_OUT) $(QUAL_OUT) $(AMOS_OUT) $(ACE_OUT)
 
 ## Getting overlaps
 50: $(NUCMER) -maxmatch -c $(MIN_LEN) $(NUCMER_FASTA) $(NUCMER_FASTA) -p $(BASE)
-51: $(SHOWCOORDS) -H -c -l -o -r -I $(MIN_IDENT) $(ALIGN) | $(BINDIR)/nucmerAnnotate | egrep 'BEGIN|END|CONTAIN|IDENTITY' > $(COORDS) 
+51: $(SHOWCOORDS) -H -c -l -o -r -I $(MIN_IDENT) $(ALIGN) | $(BINDIR)/nucmerAnnotate -ignore $(MAXTRIM) | egrep 'BEGIN|END|CONTAIN|IDENTITY' > $(COORDS) 
 52: $(BINDIR)/nucmer2ovl -ignore $(MAXTRIM) -tab $(COORDS) | $(BINDIR)/sort2 > $(OVLTAB)
 
 ## Converting overlaps

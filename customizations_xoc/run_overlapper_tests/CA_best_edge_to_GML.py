@@ -53,6 +53,7 @@ import shlex
 import sys
 import subprocess
 
+#http://stackoverflow.com/a/13160748/412582
 if "check_output" not in dir( subprocess ): # duck punch it in!
     def f(*popenargs, **kwargs):
         if 'stdout' in kwargs:

@@ -34,16 +34,36 @@ def add_result(current_read, start_pos, end_pos):
     
     # uses global variables
     
-    if is_minus_strand and start_pos.start > end_pos.start:
-        repl_tuple = (current_read, end_pos.end + 1, start_pos.start)
-    else:
-        repl_tuple = (current_read, start_pos.end + 1, end_pos.start)
+    #if print_full_range:
     
-    results.append("%s\t%d\t%d\n" % repl_tuple)
+    #strand = "minus" if is_minus_strand else "plus"
+    #
+    #if is_minus_strand and start_pos.start > end_pos.start:
+    #    repl_tuple = (current_read, end_pos.start, start_pos.end + 1, strand)
+    #else:
+    #    repl_tuple = (current_read, start_pos.start, end_pos.end + 1, strand)
+    #
+    #results.append("%s\t%d\t%d\t%s\n" % repl_tuple)
+    
+    strand = "minus" if is_minus_strand else "plus"
+    
+    if is_minus_strand and start_pos.start > end_pos.start:
+        repl_tuple = (current_read, end_pos.start, start_pos.end + 1, end_pos.end + 1, start_pos.start, strand)
+    else:
+        repl_tuple = (current_read, start_pos.start, end_pos.end + 1, start_pos.end + 1, end_pos.start, strand)
+    
+    results.append("%s\t%d\t%d\t%d\t%d\t%s\n" % repl_tuple)
+    
+    #else:
+    #    if is_minus_strand and start_pos.start > end_pos.start:
+    #        repl_tuple = (current_read, end_pos.end + 1, start_pos.start)
+    #    else:
+    #        repl_tuple = (current_read, start_pos.end + 1, end_pos.start)
+    #    results.append("%s\t%d\t%d\n" % repl_tuple)
     
     if check_oddities:
         
-        notice_name = "%s-%d-%d" % repl_tuple
+        notice_name = "%s-%d-%d" % repl_tuple[:3]
         
         if min_start - (start_pos.end + 1 - start_pos.start) >= 5:
             notices.append("Notice: %s has short 5' end (%d)\n" % (notice_name, start_pos.end + 1 - start_pos.start))
@@ -141,11 +161,11 @@ try:
                 elif end_pos is not None:
                     
                     #print out previous range
-                    
-                    if is_minus_strand and start_pos.start > end_pos.start:
-                        print("%s\t%d\t%d" % (current_read, end_pos.end + 1, start_pos.start))
-                    else:
-                        print("%s\t%d\t%d" % (current_read, start_pos.end + 1, end_pos.start))
+                    add_result(current_read, start_pos, end_pos)
+                    #if is_minus_strand and start_pos.start > end_pos.start:
+                    #    print("%s\t%d\t%d" % (current_read, end_pos.end + 1, start_pos.start))
+                    #else:
+                    #    print("%s\t%d\t%d" % (current_read, start_pos.end + 1, end_pos.start))
                     
                     seen_full_start = False
                     start_pos = None

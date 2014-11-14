@@ -78,4 +78,7 @@ for f in ../small_sequences/*.fasta; do
     
 done;
 
+rm ../big_sequences/*.fasta
+rm ../small_sequences/*.fasta
+
 cd ${ORIGDIR}

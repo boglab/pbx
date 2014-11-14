@@ -43,19 +43,19 @@ for rawfull in /opt/raw_long_*; do
     #cp /opt/pbx/customizations_xoc/RS_Resequencing_HGAP_Xo.1.xml ${f}/hgap3_resequencing/settings.xml
     #sed -i "s/HGAP_resequencing/ref_${fprefix}_HGAP3/g" ${f}/hgap3_resequencing/settings.xml
     
-    #for cutoff in "${CUTOFFS[@]}"; do
-    #    pbxresults=${f}/pbx_${cutoff}
-    #    mkdir -p ${pbxresults}
-    #    cp /opt/pbx/customizations_xoc/config_template.ini ${pbxresults}/config.ini
-    #    sed -i "s/__STRAIN__/${fprefix}/g" ${pbxresults}/config.ini
-    #    sed -i "s/__SEED_CUTOFF__/${cutoff}/g" ${pbxresults}/config.ini
-    #    echo "python /opt/pbx/pbx.py ${pbxresults}/config.ini > ${f}/logs/pbx_${cutoff}.txt 2>&1" >> /opt/pbx/run_pbx.sh
-    #done
-    
-    echo "/opt/pbx/run_pbx_hgap.sh" >> /opt/pbx/run_pbx.sh
-    echo "/opt/pbx/run_pbx_post_hgap.sh" >> /opt/pbx/run_pbx.sh
+    for cutoff in "${CUTOFFS[@]}"; do
+        pbxresults=${f}/pbx_${cutoff}
+        mkdir -p ${pbxresults}
+        cp /opt/pbx/customizations_xoc/config_template.ini ${pbxresults}/config.ini
+        sed -i "s/__STRAIN__/${fprefix}/g" ${pbxresults}/config.ini
+        sed -i "s/__SEED_CUTOFF__/${cutoff}/g" ${pbxresults}/config.ini
+        echo "python /opt/pbx/pbx.py ${pbxresults}/config.ini > ${f}/logs/pbx_${cutoff}.txt 2>&1" >> /opt/pbx/run_pbx.sh
+    done
     
 done
+
+echo "/opt/pbx/run_pbx_hgap.sh" >> /opt/pbx/run_pbx.sh
+echo "/opt/pbx/run_pbx_post_hgap.sh" >> /opt/pbx/run_pbx.sh
 
 echo "source /opt/smrtanalysis/current/etc/setup.sh" >> /opt/pbx/run_pbx_hgap.sh
 

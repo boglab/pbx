@@ -49,7 +49,7 @@ for rawfull in /opt/raw_long_*; do
         cp /opt/pbx/customizations_xoc/config_template.ini ${pbxresults}/config.ini
         sed -i "s/__STRAIN__/${fprefix}/g" ${pbxresults}/config.ini
         sed -i "s/__SEED_CUTOFF__/${cutoff}/g" ${pbxresults}/config.ini
-        echo "python /opt/pbx/pbx.py ${pbxresults}/config.ini > ${f}/logs/pbx_${cutoff}.txt 2>&1" >> /opt/pbx/run_pbx.sh
+        echo "python2 /opt/pbx/pbx.py ${pbxresults}/config.ini > ${f}/logs/pbx_${cutoff}.txt 2>&1" >> /opt/pbx/run_pbx.sh
     done
     
 done
@@ -91,7 +91,7 @@ for rawfull in /opt/raw_long_*; do
     
     echo "bash -e /opt/pbx/customizations_xoc/run_overlapper_tests/run_me.sh ${f} > ${f}/logs/overlapper_tests.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     
-    echo "bash -e /opt/pbx/customizations_xoc/generate_qc_report/run_me.sh ${f}" >> /opt/pbx/run_pbx_post_hgap.sh
+    echo "bash -e /opt/pbx/customizations_xoc/generate_qc_report/run_me.sh ${f} > ${f}/qc_report.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     
     
 done

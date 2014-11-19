@@ -40,7 +40,7 @@ for rd in overlap_*; do
         
         rdprint=`basename $rd`
         
-        python2 /opt/pbx/customizations_xoc/run_overlapper_tests/CA_best_edge_to_GML.py ${rdprint}/${rdprint}.gkpStore ${rdprint}/${rdprint}.tigStore ${rdprint}/4-unitigger/best.edges gephi_graphs/${rdprint}.gml
+        python2 /opt/pbx/customizations_xoc/run_overlapper_tests/CA_best_edge_to_GML.py ${rdprint}/${rdprint}.gkpStore ${rdprint}/${rdprint}.tigStore ${rdprint}/${rdprint}.gkpStore.fastqUIDmap ${rdprint}/4-unitigger/best.edges gephi_graphs/${rdprint}.gml
         
     fi;
 

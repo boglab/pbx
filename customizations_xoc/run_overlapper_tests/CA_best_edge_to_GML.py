@@ -71,12 +71,14 @@ if "check_output" not in dir( subprocess ): # duck punch it in!
 
 gkp_store = sys.argv[1]
 tig_store = sys.argv[2]
-best_edge_file = sys.argv[3]
-output_file = sys.argv[4]
+fastq_uid_map = sys.argv[3]
+best_edge_file = sys.argv[4]
+output_file = sys.argv[5]
 
 
 
 G=nx.DiGraph()
+frg_to_read = {}
 frg_to_tig = {}
 args = shlex.split("tigStore -g %s -t %s 1 -D unitiglist" % (gkp_store, tig_store ))
 out = subprocess.check_output(args)
@@ -100,12 +102,21 @@ for l in out:
         frg_id = l[1]
         frg_to_tig[frg_id] = unitig_id
 
+with open(fastq_uid_map) as f:
+    for l in f:
+        if l[0] == "#": continue
+        l = l.strip().split()
+        frg_id = l[1]
+        read_id = l[2]
+        frg_to_read[frg_id] = read_id
+
+
 with open(best_edge_file) as f:
     for l in f:
         if l[0] == "#": continue
         l = l.strip().split()
         id1, lib_id, best5, o1, best3, o3 = l[:6]
-        G.add_node(id1, unitig="utg%s" % frg_to_tig[id1])
+        G.add_node(id1, unitig="utg%s" % frg_to_tig[id1], rid=frg_to_read[id1])
         if best5 != "0":
             G.add_edge(best5, id1)
         if best3 != "0":

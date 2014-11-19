@@ -86,8 +86,8 @@ for rawfull in /opt/raw_long_*; do
     echo "bash -e /opt/pbx/customizations_xoc/generate_tiling_dotplots/self_similarity/run_me_nucmer.sh ${f}/hgap3_assembly/data/polished_assembly.fasta ${f}/hgap3_assembly/dotplots > ${f}/logs/hgap3_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     echo "bash -e /opt/pbx/customizations_xoc/generate_raw_tale_read_dotplots/run_me.sh ${f} > ${f}/logs/raw_tale_read_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     
-    echo "python2 /opt/pbx/customizations_xoc/run_overlapper_tests/CA_best_edge_to_GML.py ${f}/hgap2_assembly/data/celera-assembler.gkpStore ${f}/hgap2_assembly/data/celera-assembler.tigStore ${f}/hgap2_assembly/data/4-unitigger/best.edges ${f}/hgap2_assembly/data/ca_best_edges.gml" >> /opt/pbx/run_pbx_hgap.sh
-    echo "python2 /opt/pbx/customizations_xoc/run_overlapper_tests/CA_best_edge_to_GML.py ${f}/hgap3_assembly/data/celera-assembler.gkpStore ${f}/hgap3_assembly/data/celera-assembler.tigStore ${f}/hgap3_assembly/data/4-unitigger/best.edges ${f}/hgap3_assembly/data/ca_best_edges.gml" >> /opt/pbx/run_pbx_hgap.sh
+    echo "python2 /opt/pbx/customizations_xoc/run_overlapper_tests/CA_best_edge_to_GML.py ${f}/hgap2_assembly/data/celera-assembler.gkpStore ${f}/hgap2_assembly/data/celera-assembler.tigStore ${f}/hgap2_assembly/data/celera-assembler.gkpStore.fastqUIDmap ${f}/hgap2_assembly/data/4-unitigger/best.edges ${f}/hgap2_assembly/data/ca_best_edges.gml" >> /opt/pbx/run_pbx_hgap.sh
+    echo "python2 /opt/pbx/customizations_xoc/run_overlapper_tests/CA_best_edge_to_GML.py ${f}/hgap3_assembly/data/celera-assembler.gkpStore ${f}/hgap3_assembly/data/celera-assembler.tigStore ${f}/hgap3_assembly/data/celera-assembler.gkpStore.fastqUIDmap ${f}/hgap3_assembly/data/4-unitigger/best.edges ${f}/hgap3_assembly/data/ca_best_edges.gml" >> /opt/pbx/run_pbx_hgap.sh
     
     echo "bash -e /opt/pbx/customizations_xoc/run_overlapper_tests/run_me.sh ${f} > ${f}/logs/overlapper_tests.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     

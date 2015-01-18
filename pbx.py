@@ -59,6 +59,8 @@ def get_options(base_path):
     # Environment
     
     options["env"] = {
+        # This is needed to stop SMRTAnalysis 2.3 from removing our environment variables when we source setup.sh
+        "SMRT_ENV_PASSTHROUGH_VARS": "PBX_.*",
         # Auto
         "PBX_BASE_PATH": base_path,
         "PBX_SCRIPTS_PATH": os.path.join(base_path, "scripts"),

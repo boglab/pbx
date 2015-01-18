@@ -43,7 +43,7 @@
 
 import sys, os
 import optparse, logging
-from pbpy.io.FastaIO import SimpleFastqReader as sfqr, qvCharToInt
+from SMRTpipe.pbpy.io.FastaIO import SimpleFastqReader as sfqr, qvCharToInt
 import numpy
 
 class ScriptToRun:

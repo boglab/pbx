@@ -77,23 +77,30 @@ cd ${OUTPUTDIR}
 echo -e "\nQC Report for ${OUTPUTDIR_PREFIX}"
 
 echo -e "\nHGAP2 Assembly Contigs:"
-python2 /media/Togepi/pb_pipeline_devel/customizations_xoc/generate_qc_report/asm_contigs_size.py ${OUTPUTDIR}/hgap2_assembly/data/polished_assembly.fasta
+python2 /opt/pbx/customizations_xoc/generate_qc_report/asm_contigs_size.py ${OUTPUTDIR}/hgap2_assembly/data/polished_assembly.fasta
 
 echo -e "\nHGAP3 Assembly Contigs:"
-python2 /media/Togepi/pb_pipeline_devel/customizations_xoc/generate_qc_report/asm_contigs_size.py ${OUTPUTDIR}/hgap3_assembly/data/polished_assembly.fasta
+python2 /opt/pbx/customizations_xoc/generate_qc_report/asm_contigs_size.py ${OUTPUTDIR}/hgap3_assembly/data/polished_assembly.fasta
 
-#source /opt/smrtanalysis/current/etc/setup.sh
+source /opt/smrtanalysis/current/etc/setup.sh
 
 echo -e "\nHGAP2 Assembly CA Overlapper Connected Components:"
-python2 /media/Togepi/pb_pipeline_devel/customizations_xoc/run_overlapper_tests/count_connected_components.py ${OUTPUTDIR}/hgap2_assembly/data/ca_best_edges.gml
+python2 /opt/pbx/customizations_xoc/run_overlapper_tests/count_connected_components.py ${OUTPUTDIR}/hgap2_assembly/data/ca_best_edges.gml
 
 echo -e "\nHGAP3 Assembly CA Overlapper Connected Components:"
-python2 /media/Togepi/pb_pipeline_devel/customizations_xoc/run_overlapper_tests/count_connected_components.py ${OUTPUTDIR}/hgap3_assembly/data/ca_best_edges.gml
+python2 /opt/pbx/customizations_xoc/run_overlapper_tests/count_connected_components.py ${OUTPUTDIR}/hgap3_assembly/data/ca_best_edges.gml
 
 
+echo -e "\nCA Overlapper Tests:"
+
+for f in ${OUTPUTDIR}/ca_overlapper_tests/gephi_graphs/*.gml; do
+    fprefix=`basename ${f}`
+    echo ${fprefix}
+    python2 /opt/pbx/customizations_xoc/run_overlapper_tests/count_connected_components.py ${f}
+done
 
 
-echo -e "\Likely good TALE assemblies:"
+echo -e "\nLikely good TALE assemblies:"
 
 
 cd ${OUTPUTDIR}/pbx_16000/resequencing
@@ -124,15 +131,5 @@ echo -e "\nPBX 12000 combined:"
 find_likely_assemblies combined
 
 
-
-
-
-echo -e "\nCA Overlapper Tests:"
-
-for f in ${OUTPUTDIR}/ca_overlapper_tests/gephi_graphs/*.gml; do
-    fprefix=`basename ${f}`
-    echo ${fprefix}
-    python2 /media/Togepi/pb_pipeline_devel/customizations_xoc/run_overlapper_tests/count_connected_components.py ${f}
-done
 
 cd ${ORIGDIR}

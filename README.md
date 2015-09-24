@@ -36,6 +36,6 @@ Other parameters of possible interest:
 
 After the pipeline is finished running, the determined RVD sequences will be at `results_path/resequencing/unique_tale_seqs.txt` and `results_path/combine_resequenced_tals/unique_tale_seqs.txt`.
 
-These files should be interpreted as discussed in Booher et al.
+These files should be interpreted as discussed in [Booher et al.](http://dx.doi.org/10.1099/mgen.0.000032)
 
 If the number of identified TALEs seems low it may be that your library insert size was too small to produce a useful number of long reads at the 16 kbp threshold. Run the pipeline again using a lower value for `min_seed_read_length` such as 12000 or 10000.

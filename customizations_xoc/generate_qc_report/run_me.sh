@@ -25,7 +25,7 @@ find_likely_assemblies() {
     echo "There are ${likelycount} likely TALE RVD sequences."
     
     grepquery=''
-    while read line; do line=${line//\*/\\\*}; line=${line//\!/\\\!}; line=${line//\#/\\\#}; line=${line//[]-\>/\\\[\\]\\-\\>}; grepquery+="|${line}"; done < unique_tale_seqs_likely.txt
+    while read line; do line=${line//\*/\\\*}; line=${line//\!/\\\!}; line=${line//\#/\\\#}; line=${line//[]-\>/\\\[\\]->}; grepquery+="|^${line}$"; done < unique_tale_seqs_likely.txt
     grepquery=${grepquery:1}
     
     likelycountmatches=$(for f in tale_seqs/*; do test $(grep -E "${grepquery}" ${f} | sort | uniq | wc -l | cut -d ' ' -f 1 | tr -d '\n') -ge "${likelycount}" && echo ${f}; done || true)

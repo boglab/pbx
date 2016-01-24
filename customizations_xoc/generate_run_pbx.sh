@@ -15,6 +15,8 @@ fi
 #rm -f /opt/pbx/run_pbx.sh
 #rm -rf /opt/pbx/results/*
 
+PATTERNSTRAIN=$(awk -F "=" '/tale_seqs_file_export_boundaries/ {print $2}' /opt/pbx/customizations_xoc/config_template.ini | tr -d ' ' | rev | cut -c 5- | rev)
+
 cd /opt/pbx/results/
 
 CUTOFFS=(16000 12000)
@@ -28,13 +30,18 @@ for rawfull in /opt/raw_long_*; do
     mkdir -p ${f}/logs/workflow_scripts
     mkdir -p ${f}/raw_tale_read_dotplots
     
+    mkdir -p ${f}/canu_assembly
+    mkdir -p ${f}/canu_assembly/exported
+    
     mkdir -p ${f}/hgap2_assembly
     mkdir -p ${f}/hgap2_assembly/dotplots
+    mkdir -p ${f}/hgap2_assembly/exported
     find ${rawfull}/ -name "*.bax.h5" | sort > ${f}/hgap2_assembly/input.fofn
     cp /opt/pbx/customizations_xoc/RS_HGAP2_Xo.1.xml ${f}/hgap2_assembly/settings.xml
     
     mkdir -p ${f}/hgap3_assembly
     mkdir -p ${f}/hgap3_assembly/dotplots
+    mkdir -p ${f}/hgap3_assembly/exported
     find ${rawfull}/ -name "*.bax.h5" | sort > ${f}/hgap3_assembly/input.fofn
     cp /opt/pbx/customizations_xoc/RS_HGAP3_Xo.1.xml ${f}/hgap3_assembly/settings.xml
     
@@ -81,8 +88,12 @@ for rawfull in /opt/raw_long_*; do
     #echo "cp -R /opt/smrtanalysis/current/common/references/ref_${fprefix}_HGAP3/ ${f}/hgap3_resequencing/"
     #echo "fofnToSmrtpipeInput.py ${f}/hgap3_resequencing/input.fofn --jobname='HGAP3_Resequencing_Job' > ${f}/hgap3_resequencing/input.xml" >> /opt/pbx/run_pbx_hgap.sh
     #echo "smrtpipe.py --params=${f}/hgap3_resequencing/settings.xml --output=${f}/hgap3_resequencing/ xml:${f}/hgap3_resequencing/input.xml > ${f}/logs/hgap3_resequencing.txt 2>&1" >> /opt/pbx/run_pbx_hgap.sh
-    
+
+    echo "bash -e /opt/pbx/customizations_xoc/run_tale_export_hgap.sh ${f}/hgap2_assembly/data/polished_assembly.fasta ${f}/hgap2_assembly/exported ${PATTERNSTRAIN} > ${f}/logs/hgap2_export.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
+    echo "bash -e /opt/pbx/customizations_xoc/run_tale_export_hgap.sh ${f}/hgap3_assembly/data/polished_assembly.fasta ${f}/hgap3_assembly/exported ${PATTERNSTRAIN} > ${f}/logs/hgap3_export.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
+
     echo "bash -e /opt/pbx/customizations_xoc/run_canu/run_me.sh ${f} ${rawfull} > ${f}/logs/canu_assembly.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
+    echo "bash -e /opt/pbx/customizations_xoc/run_tale_export_hgap.sh ${f}/canu_assembly/canu-output/${fprefix}.consensus.fasta ${f}/canu_assembly/exported ${PATTERNSTRAIN} > ${f}/logs/hgap3_export.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     
     echo "bash -e /opt/pbx/customizations_xoc/generate_tiling_dotplots/self_similarity/run_me_nucmer.sh ${f}/hgap2_assembly/data/polished_assembly.fasta ${f}/hgap2_assembly/dotplots > ${f}/logs/hgap2_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     echo "bash -e /opt/pbx/customizations_xoc/generate_tiling_dotplots/self_similarity/run_me_nucmer.sh ${f}/hgap3_assembly/data/polished_assembly.fasta ${f}/hgap3_assembly/dotplots > ${f}/logs/hgap3_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh

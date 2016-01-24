@@ -1,8 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+if [ "$#" -ne 3 ]; then
+    echo "Usage: run_tale_export_hgap.sh /path/to/assembly/consensus.fasta /path/to/output/folder strain_settings_name" && exit 1
+fi
+
+f=`readlink -f ${1}`
+ORIGDIR=`pwd`
+OUTPUTDIR=`readlink -f ${2}`
+STRAIN=${3}
+
+cd ${OUTPUTDIR}
 
 PBX_PATH=/opt/pbx
-PBX_TALE_SEQS_EXPORT=${PBX_PATH}/tale_seqs/exporter/xoo_pxo99a.fasta
-PBX_TALE_SEQS_EXPORT_BOUNDARIES=${PBX_PATH}/tale_seqs/exporter/xoo_pxo99a.ini
+PBX_TALE_SEQS_EXPORT=${PBX_PATH}/tale_seqs/exporter/${STRAIN}.fasta
+PBX_TALE_SEQS_EXPORT_BOUNDARIES=${PBX_PATH}/tale_seqs/exporter/${STRAIN}.ini
 PBX_SCRIPTS_PATH=${PBX_PATH}/scripts
 
 tale_typical_repeat_file=$(mktemp)
@@ -68,10 +79,10 @@ export_base() {
     
 }
 
-f=$1
-
 echo $f > qc_log.txt 2>&1
 tblastx -query $f -subject $tale_typical_repeat_file -outfmt "6 qseqid sseqid qlen slen length pident mismatch gapopen qstart qend sstart send" -max_target_seqs 1000000 | sort -k 1,1 -k 9n,9 | python2 ${PBX_SCRIPTS_PATH}/check_for_boundary_tales.py $max_terminus_length >> qc_log.txt 2>&1
 
 echo $f > export_log.txt 2>&1
 export_base $f >> export_log.txt 2>&1
+
+cd ${ORIGDIR}

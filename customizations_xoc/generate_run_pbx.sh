@@ -31,6 +31,7 @@ for rawfull in /opt/raw_long_*; do
     mkdir -p ${f}/raw_tale_read_dotplots
     
     mkdir -p ${f}/canu_assembly
+    mkdir -p ${f}/canu_assembly/dotplots
     mkdir -p ${f}/canu_assembly/exported
     
     mkdir -p ${f}/hgap2_assembly
@@ -89,23 +90,24 @@ for rawfull in /opt/raw_long_*; do
     #echo "fofnToSmrtpipeInput.py ${f}/hgap3_resequencing/input.fofn --jobname='HGAP3_Resequencing_Job' > ${f}/hgap3_resequencing/input.xml" >> /opt/pbx/run_pbx_hgap.sh
     #echo "smrtpipe.py --params=${f}/hgap3_resequencing/settings.xml --output=${f}/hgap3_resequencing/ xml:${f}/hgap3_resequencing/input.xml > ${f}/logs/hgap3_resequencing.txt 2>&1" >> /opt/pbx/run_pbx_hgap.sh
 
-    echo "bash -e /opt/pbx/customizations_xoc/run_tale_export_hgap.sh ${f}/hgap2_assembly/data/polished_assembly.fasta ${f}/hgap2_assembly/exported ${PATTERNSTRAIN} > ${f}/logs/hgap2_export.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
-    echo "bash -e /opt/pbx/customizations_xoc/run_tale_export_hgap.sh ${f}/hgap3_assembly/data/polished_assembly.fasta ${f}/hgap3_assembly/exported ${PATTERNSTRAIN} > ${f}/logs/hgap3_export.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
-
     echo "bash -e /opt/pbx/customizations_xoc/run_canu/run_me.sh ${f} ${rawfull} > ${f}/logs/canu_assembly.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
-    echo "bash -e /opt/pbx/customizations_xoc/run_tale_export_hgap.sh ${f}/canu_assembly/canu-output/${fprefix}.consensus.fasta ${f}/canu_assembly/exported ${PATTERNSTRAIN} > ${f}/logs/hgap3_export.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     
+    echo "bash -e /opt/pbx/customizations_xoc/run_tale_export_hgap.sh ${f}/hgap2_assembly/data/polished_assembly.fasta ${f}/hgap2_assembly/exported ${PATTERNSTRAIN} > ${f}/logs/hgap2_export.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     echo "bash -e /opt/pbx/customizations_xoc/generate_tiling_dotplots/self_similarity/run_me_nucmer.sh ${f}/hgap2_assembly/data/polished_assembly.fasta ${f}/hgap2_assembly/dotplots > ${f}/logs/hgap2_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
-    echo "bash -e /opt/pbx/customizations_xoc/generate_tiling_dotplots/self_similarity/run_me_nucmer.sh ${f}/hgap3_assembly/data/polished_assembly.fasta ${f}/hgap3_assembly/dotplots > ${f}/logs/hgap3_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
-    echo "bash -e /opt/pbx/customizations_xoc/generate_raw_tale_read_dotplots/run_me.sh ${f} > ${f}/logs/raw_tale_read_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
-    
     echo "python2 /opt/pbx/customizations_xoc/run_overlapper_tests/CA_best_edge_to_GML.py ${f}/hgap2_assembly/data/celera-assembler.gkpStore ${f}/hgap2_assembly/data/celera-assembler.tigStore ${f}/hgap2_assembly/data/celera-assembler.gkpStore.fastqUIDmap ${f}/hgap2_assembly/data/4-unitigger/best.edges ${f}/hgap2_assembly/data/ca_best_edges.gml" >> /opt/pbx/run_pbx_hgap.sh
+    
+    echo "bash -e /opt/pbx/customizations_xoc/run_tale_export_hgap.sh ${f}/hgap3_assembly/data/polished_assembly.fasta ${f}/hgap3_assembly/exported ${PATTERNSTRAIN} > ${f}/logs/hgap3_export.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
+    echo "bash -e /opt/pbx/customizations_xoc/generate_tiling_dotplots/self_similarity/run_me_nucmer.sh ${f}/hgap3_assembly/data/polished_assembly.fasta ${f}/hgap3_assembly/dotplots > ${f}/logs/hgap3_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     echo "python2 /opt/pbx/customizations_xoc/run_overlapper_tests/CA_best_edge_to_GML.py ${f}/hgap3_assembly/data/celera-assembler.gkpStore ${f}/hgap3_assembly/data/celera-assembler.tigStore ${f}/hgap3_assembly/data/celera-assembler.gkpStore.fastqUIDmap ${f}/hgap3_assembly/data/4-unitigger/best.edges ${f}/hgap3_assembly/data/ca_best_edges.gml" >> /opt/pbx/run_pbx_hgap.sh
+    
+    echo "bash -e /opt/pbx/customizations_xoc/run_tale_export_hgap.sh ${f}/canu_assembly/canu-output/${fprefix}.consensus.fasta ${f}/canu_assembly/exported ${PATTERNSTRAIN} > ${f}/logs/hgap3_export.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
+    echo "bash -e /opt/pbx/customizations_xoc/generate_tiling_dotplots/self_similarity/run_me_nucmer.sh ${f}/canu_assembly/canu-output/${fprefix}.consensus.fasta ${f}/canu_assembly/dotplots > ${f}/logs/canu_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
+    
+    echo "bash -e /opt/pbx/customizations_xoc/generate_raw_tale_read_dotplots/run_me.sh ${f} > ${f}/logs/raw_tale_read_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     
     echo "bash -e /opt/pbx/customizations_xoc/run_overlapper_tests/run_me.sh ${f} > ${f}/logs/overlapper_tests.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     
     echo "bash -e /opt/pbx/customizations_xoc/generate_qc_report/run_me.sh ${f} > ${f}/qc_report.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
-    
     
 done
 

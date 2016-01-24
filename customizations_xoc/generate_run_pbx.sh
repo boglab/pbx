@@ -82,6 +82,8 @@ for rawfull in /opt/raw_long_*; do
     #echo "fofnToSmrtpipeInput.py ${f}/hgap3_resequencing/input.fofn --jobname='HGAP3_Resequencing_Job' > ${f}/hgap3_resequencing/input.xml" >> /opt/pbx/run_pbx_hgap.sh
     #echo "smrtpipe.py --params=${f}/hgap3_resequencing/settings.xml --output=${f}/hgap3_resequencing/ xml:${f}/hgap3_resequencing/input.xml > ${f}/logs/hgap3_resequencing.txt 2>&1" >> /opt/pbx/run_pbx_hgap.sh
     
+    echo "bash -e /opt/pbx/customizations_xoc/run_canu/run_me.sh ${f} ${rawfull} > ${f}/logs/canu_assembly.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
+    
     echo "bash -e /opt/pbx/customizations_xoc/generate_tiling_dotplots/self_similarity/run_me_nucmer.sh ${f}/hgap2_assembly/data/polished_assembly.fasta ${f}/hgap2_assembly/dotplots > ${f}/logs/hgap2_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     echo "bash -e /opt/pbx/customizations_xoc/generate_tiling_dotplots/self_similarity/run_me_nucmer.sh ${f}/hgap3_assembly/data/polished_assembly.fasta ${f}/hgap3_assembly/dotplots > ${f}/logs/hgap3_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh
     echo "bash -e /opt/pbx/customizations_xoc/generate_raw_tale_read_dotplots/run_me.sh ${f} > ${f}/logs/raw_tale_read_dotplots.txt 2>&1" >> /opt/pbx/run_pbx_post_hgap.sh

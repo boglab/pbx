@@ -84,7 +84,7 @@ for rawfull in /opt/raw_long_*; do
     
     echo "bash -e /opt/pbx/customizations_xoc/run_canu/run_me.sh ${f} ${fprefix} ${rawfull} > ${f}/logs/canu_assembly.txt 2>&1" >> /opt/pbx/run_pbx_pre_smrtenv.sh
     echo "referenceUploader  --samIdx='samtools faidx' --saw='sawriter -blt 8 -welter' -c -n ref_${fprefix}_Canu -f ${f}/canu_assembly/canu-output/${fprefix}.consensus.fasta" >> /opt/pbx/run_pbx_smrtenv.sh
-    echo "cp -R /opt/smrtanalysis/current/common/references/ref_${fprefix}_Canu/ ${f}/canu_assembly/resequencing/"
+    echo "cp -R /opt/smrtanalysis/current/common/references/ref_${fprefix}_Canu/ ${f}/canu_assembly/resequencing/" >> /opt/pbx/run_pbx_smrtenv.sh
     echo "fofnToSmrtpipeInput.py ${f}/canu_assembly/resequencing/input.fofn --jobname='Canu_Resequencing_Job' > ${f}/canu_assembly/resequencing/input.xml" >> /opt/pbx/run_pbx_smrtenv.sh
     echo "smrtpipe.py --params=${f}/canu_assembly/resequencing/settings.xml --output=${f}/canu_assembly/resequencing/ xml:${f}/canu_assembly/resequencing/input.xml > ${f}/logs/canu_resequencing.txt 2>&1" >> /opt/pbx/run_pbx_smrtenv.sh
     echo "gunzip -c ${f}/canu_assembly/resequencing/data/consensus.fasta.gz > ${f}/canu_assembly/resequencing/data/consensus.fasta" >> /opt/pbx/run_pbx_smrtenv.sh

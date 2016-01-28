@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 3 ]; then
     echo "Usage: run_canu.sh /path/to/pbx/results/folder strain_name /path/to/raw/reads/folder" && exit 1
 fi
 

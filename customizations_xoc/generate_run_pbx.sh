@@ -41,7 +41,7 @@ for rawfull in /opt/raw_long_*; do
     mkdir -p ${f}/canu_assembly/resequencing
     find ${rawfull}/ -name "*.bax.h5" | sort > ${f}/canu_assembly/resequencing/input.fofn
     cp /opt/pbx/customizations_xoc/RS_Resequencing_HGAP_Xo.1.xml ${f}/canu_assembly/resequencing/settings.xml
-    sed -i "s/HGAP_resequencing/ref_${fprefix}_Canu/g" ${f}/canu_assembly/resequencing/settings.xml
+    sed -i "s/HGAP_resequencing/ref_${fprefix/-/_}_Canu/g" ${f}/canu_assembly/resequencing/settings.xml
     
     mkdir -p ${f}/hgap2_assembly
     mkdir -p ${f}/hgap2_assembly/dotplots
@@ -58,7 +58,7 @@ for rawfull in /opt/raw_long_*; do
     #mkdir -p ${f}/hgap3_resequencing
     #find ${rawfull}/ -name "*.bax.h5" | sort > ${f}/hgap3_resequencing/input.fofn
     #cp /opt/pbx/customizations_xoc/RS_Resequencing_HGAP_Xo.1.xml ${f}/hgap3_resequencing/settings.xml
-    #sed -i "s/HGAP_resequencing/ref_${fprefix}_HGAP3/g" ${f}/hgap3_resequencing/settings.xml
+    #sed -i "s/HGAP_resequencing/ref_${fprefix/-/_}_HGAP3/g" ${f}/hgap3_resequencing/settings.xml
     
     for cutoff in "${CUTOFFS[@]}"; do
         pbxresults=${f}/pbx_${cutoff}
@@ -83,8 +83,8 @@ for rawfull in /opt/raw_long_*; do
     f="/opt/pbx/results/${fprefix}"
     
     echo "bash -e /opt/pbx/customizations_xoc/run_canu/run_me.sh ${f} ${fprefix} ${rawfull} > ${f}/logs/canu_assembly.txt 2>&1" >> /opt/pbx/run_pbx_pre_smrtenv.sh
-    echo "referenceUploader  --samIdx='samtools faidx' --saw='sawriter -blt 8 -welter' -c -n ref_${fprefix}_Canu -f ${f}/canu_assembly/canu-output/${fprefix}.consensus.fasta" >> /opt/pbx/run_pbx_smrtenv.sh
-    echo "cp -R /opt/smrtanalysis/current/common/references/ref_${fprefix}_Canu/ ${f}/canu_assembly/resequencing/" >> /opt/pbx/run_pbx_smrtenv.sh
+    echo "referenceUploader  --samIdx='samtools faidx' --saw='sawriter -blt 8 -welter' -c -n ref_${fprefix/-/_}_Canu -f ${f}/canu_assembly/canu-output/${fprefix}.consensus.fasta" >> /opt/pbx/run_pbx_smrtenv.sh
+    echo "cp -R /opt/smrtanalysis/current/common/references/ref_${fprefix/-/_}_Canu/ ${f}/canu_assembly/resequencing/" >> /opt/pbx/run_pbx_smrtenv.sh
     echo "fofnToSmrtpipeInput.py ${f}/canu_assembly/resequencing/input.fofn --jobname='Canu_Resequencing_Job' > ${f}/canu_assembly/resequencing/input.xml" >> /opt/pbx/run_pbx_smrtenv.sh
     echo "smrtpipe.py --params=${f}/canu_assembly/resequencing/settings.xml --output=${f}/canu_assembly/resequencing/ xml:${f}/canu_assembly/resequencing/input.xml > ${f}/logs/canu_resequencing.txt 2>&1" >> /opt/pbx/run_pbx_smrtenv.sh
     echo "gunzip -c ${f}/canu_assembly/resequencing/data/consensus.fasta.gz > ${f}/canu_assembly/resequencing/data/consensus.fasta" >> /opt/pbx/run_pbx_smrtenv.sh
@@ -97,13 +97,13 @@ for rawfull in /opt/raw_long_*; do
     echo "smrtpipe.py --params=${f}/hgap3_assembly/settings.xml --output=${f}/hgap3_assembly/ xml:${f}/hgap3_assembly/input.xml > ${f}/logs/hgap3_assembly.txt 2>&1" >> /opt/pbx/run_pbx_smrtenv.sh
     echo "gunzip -c ${f}/hgap3_assembly/data/polished_assembly.fasta.gz > ${f}/hgap3_assembly/data/polished_assembly.fasta" >> /opt/pbx/run_pbx_smrtenv.sh
 
-    #echo "referenceUploader  --samIdx='samtools faidx' --saw='sawriter -blt 8 -welter' -c -n ref_${fprefix}_HGAP2 -f ${f}/hgap2_assembly/data/polished_assembly.fasta" >> /opt/pbx/run_pbx_smrtenv.sh
-    #echo "cp -R /opt/smrtanalysis/current/common/references/ref_${fprefix}_HGAP2/ ${f}/hgap2_resequencing/"
+    #echo "referenceUploader  --samIdx='samtools faidx' --saw='sawriter -blt 8 -welter' -c -n ref_${fprefix/-/_}_HGAP2 -f ${f}/hgap2_assembly/data/polished_assembly.fasta" >> /opt/pbx/run_pbx_smrtenv.sh
+    #echo "cp -R /opt/smrtanalysis/current/common/references/ref_${fprefix/-/_}_HGAP2/ ${f}/hgap2_resequencing/"
     #echo "fofnToSmrtpipeInput.py ${f}/hgap2_resequencing/input.fofn --jobname='HGAP2_Resequencing_Job' > ${f}/hgap2_resequencing/input.xml" >> /opt/pbx/run_pbx_smrtenv.sh
     #echo "smrtpipe.py --params=${f}/hgap2_resequencing/settings.xml --output=${f}/hgap2_resequencing/ xml:${f}/hgap2_resequencing/input.xml > ${f}/logs/hgap2_resequencing.txt 2>&1" >> /opt/pbx/run_pbx_smrtenv.sh
 
-    #echo "referenceUploader  --samIdx='samtools faidx' --saw='sawriter -blt 8 -welter' -c -n ref_${fprefix}_HGAP3 -f ${f}/hgap3_assembly/data/polished_assembly.fasta" >> /opt/pbx/run_pbx_smrtenv.sh
-    #echo "cp -R /opt/smrtanalysis/current/common/references/ref_${fprefix}_HGAP3/ ${f}/hgap3_resequencing/"
+    #echo "referenceUploader  --samIdx='samtools faidx' --saw='sawriter -blt 8 -welter' -c -n ref_${fprefix/-/_}_HGAP3 -f ${f}/hgap3_assembly/data/polished_assembly.fasta" >> /opt/pbx/run_pbx_smrtenv.sh
+    #echo "cp -R /opt/smrtanalysis/current/common/references/ref_${fprefix/-/_}_HGAP3/ ${f}/hgap3_resequencing/"
     #echo "fofnToSmrtpipeInput.py ${f}/hgap3_resequencing/input.fofn --jobname='HGAP3_Resequencing_Job' > ${f}/hgap3_resequencing/input.xml" >> /opt/pbx/run_pbx_smrtenv.sh
     #echo "smrtpipe.py --params=${f}/hgap3_resequencing/settings.xml --output=${f}/hgap3_resequencing/ xml:${f}/hgap3_resequencing/input.xml > ${f}/logs/hgap3_resequencing.txt 2>&1" >> /opt/pbx/run_pbx_smrtenv.sh
     

@@ -141,4 +141,4 @@ for rawfull in /opt/raw_long_*; do
 done;
 
 echo "Done writing workflow scripts"
-echo "To run, start screen and then do: /opt/pbx/run_pbx.sh"
+echo "To run, start screen and then do: bash -e /opt/pbx/run_pbx.sh"

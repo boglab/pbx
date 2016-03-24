@@ -30,7 +30,7 @@ for rawfull in /opt/raw_long_*; do
     fprefix=`echo "${rawfull}" | cut -c 15-`
     f="/opt/pbx/results/${fprefix}"
     
-    find  ${rawfull} -iname ".DS_Store" -o -iname ".*h5" -o -iname ".*xml" -exec rm {} \;
+    find ${rawfull} -type f -iname ".*" -print0 | xargs -0 rm -f
     
     mkdir -p ${f}/logs/
     mkdir -p ${f}/logs/workflow_scripts

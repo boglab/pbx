@@ -78,7 +78,11 @@ for f in ../small_sequences/*.fasta; do
     
 done;
 
-rm ../big_sequences/*.fasta
-rm ../small_sequences/*.fasta
+#changed to find because in case either big_sequences or small_sequences directories do not have .fasta files
+# rm ../big_sequences/*.fasta
+# TODO: #change find so it only does file -type f
+find ../big_sequences -type f -name "*.fasta" -exec rm -v {} \; 
+# rm ../small_sequences/*.fasta
+find ../small_sequences -type f -name "*.fasta" -exec rm -v {} \;
 
 cd ${ORIGDIR}
